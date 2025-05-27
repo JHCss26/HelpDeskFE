@@ -1,28 +1,33 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import Login from "../pages/auth/Login";
+import React from "react";
 
-import PrivateRoute from "./PrivateRoute";
-import NavigateToRoleDashboard from "./NavigateToRoleDashboard";
-import RoleRoute from "./RoleRoute";
-import AgentDashboard from "../pages/agent/AgentDashboard";
-import AdminDashboard from "../pages/admin/AdminDashboard";
-import Dashboard from "../pages/users/Dashboard";
-import CreateTicket from "../pages/tickets/CreateTicket";
-import TicketDetails from "../pages/tickets/TicketDetails";
-import ManageUsers from "../pages/admin/ManageUsers";
-import ManageCategories from "../pages/admin/ManageCategories";
-import ManageDepartments from "../pages/admin/ManageDepartments";
-import TicketBoard from "../pages/tickets/TicketBoard";
-import SetupPassword from "../pages/auth/SetupPassword";
-import UserDetails from "../pages/admin/UserDetails";
-import SLASettingsPage from "../pages/admin/SLASettingsPage";
-import MainLayout from "../layouts/MainLayout";
-import Tickets from "../pages/tickets/Tickets";
-import Admin from "../pages/admin/Admin";
-import Agent from "../pages/agent/Agent";
-import User from "../pages/users/User";
-import AdminManager from "../pages/admin/AdminManager";
+
+const PrivateRoute = React.lazy(() => import("./PrivateRoute"));
+const NavigateToRoleDashboard = React.lazy(() => import("./NavigateToRoleDashboard"));
+const RoleRoute = React.lazy(() => import("./RoleRoute"));
+const AgentDashboard = React.lazy(() => import("../pages/agent/AgentDashboard"));
+const AdminDashboard = React.lazy(() => import("../pages/admin/AdminDashboard"));
+const Dashboard = React.lazy(() => import("../pages/users/Dashboard"));
+const CreateTicket = React.lazy(() => import("../pages/tickets/CreateTicket"));
+const TicketDetails = React.lazy(() => import("../pages/tickets/TicketDetails"));
+const ManageUsers = React.lazy(() => import("../pages/admin/ManageUsers"));
+const ManageCategories = React.lazy(() => import("../pages/admin/ManageCategories"));
+const ManageDepartments = React.lazy(() => import("../pages/admin/ManageDepartments"));
+const TicketBoard = React.lazy(() => import("../pages/tickets/TicketBoard"));
+const SetupPassword = React.lazy(() => import("../pages/auth/SetupPassword"));
+const UserDetails = React.lazy(() => import("../pages/admin/UserDetails"));
+const SLASettingsPage = React.lazy(() => import("../pages/admin/SLASettingsPage"));
+const MainLayout = React.lazy(() => import("../layouts/MainLayout"));
+const Tickets = React.lazy(() => import("../pages/tickets/Tickets"));
+const Admin = React.lazy(() => import("../pages/admin/Admin"));
+const Agent = React.lazy(() => import("../pages/agent/Agent"));
+const User = React.lazy(() => import("../pages/users/User"));
+const AdminManager = React.lazy(() => import("../pages/admin/AdminManager"));
+const ResetPassword = React.lazy(() => import("../pages/auth/ResetPassword"));
+const ForgotPassword = React.lazy(() => import("../pages/auth/ForgotPassword"));
+const Register = React.lazy(() => import("../pages/auth/Register"));
+const Login = React.lazy(() => import("../pages/auth/Login"));
 
 export default function AppRoutes() {
   const { token } = useSelector((state) => state.auth);
@@ -31,7 +36,26 @@ export default function AppRoutes() {
     <Routes>
       {/* Public */}
       <Route path="/login" element={<Login />} />
+      <Route
+        path="/register"
+        element={
+          <Register />
+        }
+      />
       <Route path="/setup-password/:token" element={<SetupPassword />} />
+      <Route
+        path="/reset-password/:token"
+        element={
+          <ResetPassword />
+        }
+      />
+      <Route
+        path="/forgot-password"
+        element={
+          <ForgotPassword />
+        }
+      />
+      
       {/* Protected */}
       <Route
         path="/"
@@ -98,7 +122,7 @@ export default function AppRoutes() {
           />
 
           <Route path="manage" element={<AdminManager />}>
-            
+
             <Route
               path="categories"
               element={

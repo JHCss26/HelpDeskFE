@@ -10,14 +10,13 @@ const CreateTicket = () => {
   const [form, setForm] = useState({
     title: "",
     description: "",
-    department: "",
+   
     category: "",
     priority: "Medium",
     attachments: [], // now an array
   });
   const [previews, setPreviews] = useState([]); // array of preview URLs
   const [categories, setCategories] = useState([]);
-  const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -25,12 +24,10 @@ const CreateTicket = () => {
   useEffect(() => {
     const loadMeta = async () => {
       try {
-        const [catsRes, deptsRes] = await Promise.all([
+        const [catsRes] = await Promise.all([
           axios.get("/api/categories"),
-          axios.get("/api/departments"),
         ]);
         setCategories(catsRes.data);
-        setDepartments(deptsRes.data);
       } catch (err) {
         console.error(err);
         setError("Failed to load categories or departments.");
@@ -71,7 +68,6 @@ const CreateTicket = () => {
     if (
       !form.title.trim() ||
       !form.description.trim() ||
-      !form.department ||
       !form.category
     ) {
       setError("Please fill in all required fields.");
@@ -81,7 +77,6 @@ const CreateTicket = () => {
     const fd = new FormData();
     fd.append("title", form.title);
     fd.append("description", form.description);
-    fd.append("department", form.department);
     fd.append("category", form.category);
     fd.append("priority", form.priority);
     form.attachments.forEach((file) => fd.append("attachments", file));
@@ -148,27 +143,6 @@ const CreateTicket = () => {
           </div>
 
           {/* Department & Category */}
-
-          <div>
-            <label htmlFor="department" className="block font-medium mb-1">
-              Department <span className="text-red-500">*</span>
-            </label>
-            <select
-              id="department"
-              name="department"
-              value={form.department}
-              onChange={handleChange}
-              className="w-full border rounded p-2 focus:outline-none focus:ring"
-              required
-            >
-              <option value="">Select Department</option>
-              {departments.map((d) => (
-                <option key={d._id} value={d._id}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
-          </div>
 
           <div>
             <label htmlFor="category" className="block font-medium mb-1">
