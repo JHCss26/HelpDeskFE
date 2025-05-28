@@ -40,7 +40,7 @@ export default function TicketBoard() {
         // build query params object
         const params = {};
         if (statusFilter.length > 0) params.status = statusFilter.join(",");
-        if (priorityFilter) params.priority = priorityFilter;
+        if (priorityFilter.length > 0 ) params.priority = priorityFilter.join(",");
 
         const { data } = await axios.get(endpoint, { params });
         setTickets(data);
