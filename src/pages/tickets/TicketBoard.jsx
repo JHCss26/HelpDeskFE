@@ -6,15 +6,9 @@ import axios from "../../api/axiosInstance";
 import { TicketIcon, TableCellsIcon } from "@heroicons/react/24/outline";
 import ExportButton from "../../components/ExportButton";
 import { Download, Eye } from "react-feather";
+import StatusFilterWithCheckboxes from "../../components/StatusFilterWithCheckboxes";
+import PriorityFilterWithCheckboxes from "../../components/PriorityFilterWithCheckboxes";
 
-const STATUSES = [
-  "Open",
-  "In Progress",
-  "On Hold",
-  "Waiting for Customer",
-  "Resolved",
-  "Closed",
-];
 const PRIORITIES = ["Low", "Medium", "High", "Critical"];
 
 export default function TicketBoard() {
@@ -23,9 +17,8 @@ export default function TicketBoard() {
   const isAdmin = user.role === "admin";
 
   const [tickets, setTickets] = useState([]);
-  const [viewType, setViewType] = useState("cards"); // 'table' | 'cards'
   const [agentFilter, setAgentFilter] = useState("all"); // 'all' | 'assigned'
-  const [statusFilter, setStatusFilter] = useState(""); // '' | one of STATUSES
+  const [statusFilter, setStatusFilter] = useState(["Open"]); // array of statuses
   const [priorityFilter, setPriorityFilter] = useState(""); // '' | one of PRIORITIES
   const [loading, setLoading] = useState(false);
 
@@ -46,7 +39,7 @@ export default function TicketBoard() {
       try {
         // build query params object
         const params = {};
-        if (statusFilter) params.status = statusFilter;
+        if (statusFilter.length > 0) params.status = statusFilter.join(",");
         if (priorityFilter) params.priority = priorityFilter;
 
         const { data } = await axios.get(endpoint, { params });
@@ -125,7 +118,7 @@ export default function TicketBoard() {
         {/* Filters & View Toggle */}
         <div className="flex flex-wrap items-center space-x-2 gap-2">
           {/* Status Filter */}
-          <select
+          {/* <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             className="border rounded px-2 py-1"
@@ -136,46 +129,18 @@ export default function TicketBoard() {
                 {s}
               </option>
             ))}
-          </select>
+          </select> */}
+
+          <StatusFilterWithCheckboxes
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+          />
 
           {/* Priority Filter */}
-          <select
-            value={priorityFilter}
-            onChange={(e) => setPriorityFilter(e.target.value)}
-            className="border rounded px-2 py-1"
-          >
-            <option value="">All Priorities</option>
-            {PRIORITIES.map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
-            ))}
-          </select>
-
-          {/* View Toggle */}
-          <button
-            onClick={() => setViewType("table")}
-            className={`p-2 rounded ${
-              viewType === "table"
-                ? "bg-blue-600 text-white"
-                : "hover:bg-gray-100"
-            }`}
-            title="Table view"
-          >
-            <TableCellsIcon className="h-5 w-5" />
-          </button>
-
-          <button
-            onClick={() => setViewType("cards")}
-            className={`p-2 rounded ${
-              viewType === "cards"
-                ? "bg-blue-600 text-white"
-                : "hover:bg-gray-100"
-            }`}
-            title="Card view"
-          >
-            <TicketIcon className="h-5 w-5" />
-          </button>
+          <PriorityFilterWithCheckboxes 
+            priorityFilter={priorityFilter}
+            setPriorityFilter={setPriorityFilter}
+          />
 
           {/* Export All Tickets */}
           <ExportButton />
@@ -190,156 +155,85 @@ export default function TicketBoard() {
         </div>
       </div>
 
-      {/* Table View */}
-      {viewType === "table" && (
-        <div className="overflow-x-auto bg-white shadow rounded">
-          <table className="min-w-full table-fixed border-collapse">
-            <thead className="">
+      <div className="overflow-x-auto bg-white shadow rounded mt-6">
+        <table className="w-full bg-white shadow rounded overflow-hidden">
+          <thead className="shadow border border-gray-50 bg-gray-50">
+            <tr>
+              <th className="px-4 py-2 text-left">ID</th>
+              <th className="px-4 py-2 text-left">Title</th>
+              <th className="px-4 py-2 text-left">Category</th>
+              <th className="px-4 py-2 text-left">Priority</th>
+              <th className="px-4 py-2 text-left">Status</th>
+              <th className="px-4 py-2 text-left">Created At</th>
+              <th className="px-4 py-2 text-left">SLA Due</th>
+              <th className="px-4 py-2 text-left">SLA Status</th>
+              {isAdmin && <th className="px-4 py-2 text-left">Created By</th>}
+              {isAdmin && <th className="px-4 py-2 text-left">Assigned To</th>}
+              <th className="px-4 py-2 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tickets.length === 0 && (
               <tr>
-                <th className="px-4 py-2 text-left">ID</th>
-                <th className="px-4 py-2 text-left">Title</th>
-                <th className="px-4 py-2 text-left">Category</th>
-                <th className="px-4 py-2 text-left">Priority</th>
-                <th className="px-4 py-2 text-left">Status</th>
-                <th className="px-4 py-2 text-left">Created At</th>
-                <th className="px-4 py-2 text-left">SLA Due</th>
-                <th className="px-4 py-2 text-left">SLA Status</th>
-                {isAdmin && <th className="px-4 py-2 text-left">Created By</th>}
-                {isAdmin && (
-                  <th className="px-4 py-2 text-left">Assigned To</th>
-                )}
-                <th className="px-4 py-2 text-left">Actions</th>
+                <td colSpan="11" className="p-4 text-center text-gray-500">
+                  No Tickets found.
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {tickets.map((t) => (
-                <tr key={t._id} className=" hover:bg-gray-50 border-b border-gray-200">
-                  <td className="px-4 py-2">{t.ticketId}</td>
-                  <td className="px-4 py-2">
-                    <Link
-                      to={`/tickets/${t._id}`}
-                      className="text-blue-600 underline"
-                    >
-                      {t.title}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-2">{t.category?.name || "—"}</td>
-                  <td className="px-4 py-2">{t.priority}</td>
-                  <td className="px-4 py-2">{t.status}</td>
-                  <td className="px-4 py-2">
-                    {new Date(t.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-2">
-                    {t.slaDueDate
-                      ? new Date(t.slaDueDate).toLocaleString()
-                      : "—"}
-                  </td>
-                  <td className="px-4 py-2">
-                    {t.isSlaBreached ? (
-                      <span className="text-red-600 font-semibold">
-                        Breached
-                      </span>
-                    ) : t.slaReminderSent ? (
-                      <span className="text-orange-600">Upcoming</span>
-                    ) : (
-                      <span className="text-green-600">OK</span>
-                    )}
-                  </td>
-                  {isAdmin && (
-                    <td className="px-4 py-2">{t.createdBy?.name}</td>
+            )}
+            {tickets.map((t) => (
+              <tr
+                key={t._id}
+                className=" hover:bg-gray-50 border-b border-gray-200"
+              >
+                <td className="px-4 py-2">{t.ticketId}</td>
+                <td className="px-4 py-2">
+                  <Link
+                    to={`/tickets/${t._id}`}
+                    className="text-blue-600 underline"
+                  >
+                    {t.title}
+                  </Link>
+                </td>
+                <td className="px-4 py-2">{t.category?.name || "—"}</td>
+                <td className="px-4 py-2">{t.priority}</td>
+                <td className="px-4 py-2">{t.status}</td>
+                <td className="px-4 py-2">
+                  {new Date(t.createdAt).toLocaleDateString()}
+                </td>
+                <td className="px-4 py-2">
+                  {t.slaDueDate ? new Date(t.slaDueDate).toLocaleString() : "—"}
+                </td>
+                <td className="px-4 py-2">
+                  {t.isSlaBreached ? (
+                    <span className="text-red-600 font-semibold">Breached</span>
+                  ) : t.slaReminderSent ? (
+                    <span className="text-orange-600">Upcoming</span>
+                  ) : (
+                    <span className="text-green-600">OK</span>
                   )}
-                  {isAdmin && (
-                    <td className="px-4 py-2">{t.assignedTo?.name}</td>
-                  )}
-                  <td className="px-4 py-2">
-                    <button
-                      className="text-gray-500 hover:text-gray-700 focus:outline-none cursor-pointer"
-                      onClick={(e) => downloadTickets(e, t)}
-                    >
-                      <Download />
-                    </button>
-
-                    <button
-                      className="text-gray-500 hover:text-gray-700 focus:outline-none cursor-pointer ml-2"
-                      onClick={() => navigate(`/tickets/${t._id}`)}
-                    >
-                      <Eye />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* Card View */}
-      {viewType === "cards" && (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {tickets.map((t) => (
-            <div
-              className="block bg-white shadow rounded-lg hover:shadow-lg transition"
-              key={t._id}
-            >
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h2 className="font-semibold text-lg mb-1">{t.title}</h2>
+                </td>
+                {isAdmin && <td className="px-4 py-2">{t.createdBy?.name}</td>}
+                {isAdmin && <td className="px-4 py-2">{t.assignedTo?.name}</td>}
+                <td className="px-4 py-2">
                   <button
                     className="text-gray-500 hover:text-gray-700 focus:outline-none cursor-pointer"
                     onClick={(e) => downloadTickets(e, t)}
                   >
                     <Download />
                   </button>
-                </div>
-                <p className="text-xs text-gray-500 mb-2">{t.ticketId}</p>
-                <div
-                  className="text-sm space-y-1 cursor-pointer"
-                  onClick={() => navigate(`/tickets/${t._id}`)}
-                >
-                  <p>
-                    <span className="font-medium">Category:</span>{" "}
-                    {t.category?.name || "—"}
-                  </p>
-                  <p>
-                    <span className="font-medium">Priority:</span> {t.priority}
-                  </p>
-                  <p>
-                    <span className="font-medium">Status:</span> {t.status}
-                  </p>
-                  <p>
-                    <span className="font-medium">Created:</span>{" "}
-                    {new Date(t.createdAt).toLocaleDateString()}
-                  </p>
-                  <p>
-                    <strong>SLA Due:</strong>{" "}
-                    {new Date(t.slaDueDate).toLocaleString()}
-                  </p>
-                  <p>
-                    <strong>Status:</strong>{" "}
-                    {t.isSlaBreached
-                      ? "🚨 Breached"
-                      : t.slaReminderSent
-                      ? "⏰ Upcoming"
-                      : "✅ OK"}
-                  </p>
-                  {isAdmin && (
-                    <>
-                      <p>
-                        <span className="font-medium">By:</span>{" "}
-                        {t.createdBy?.name}
-                      </p>
-                      <p>
-                        <span className="font-medium">Assigned To:</span>{" "}
-                        {t.assignedTo?.name}
-                      </p>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+
+                  <button
+                    className="text-gray-500 hover:text-gray-700 focus:outline-none cursor-pointer ml-2"
+                    onClick={() => navigate(`/tickets/${t._id}`)}
+                  >
+                    <Eye />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

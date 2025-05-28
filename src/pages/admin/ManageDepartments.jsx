@@ -95,7 +95,7 @@ export default function ManageDepartments() {
         <p>Loading…</p>
       ) : (
         <table className="w-full bg-white shadow rounded overflow-hidden">
-          <thead className="shadow border border-gray-50 rounded bg-gray-50">
+          <thead className="shadow border border-gray-50 bg-gray-50">
             <tr>
               <th className="p-2 text-left w-5/6">Name</th>
               <th className="p-2 text-left">Actions</th>

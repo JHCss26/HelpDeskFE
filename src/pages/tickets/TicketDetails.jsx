@@ -13,7 +13,7 @@ const STATUSES = [
   "Waiting for Customer",
   "Resolved",
   "Closed",
-  "Reopened",
+  "Reopen",
 ];
 const PRIORITIES = ["Low", "Medium", "High", "Critical"];
 const IMAGE_EXTS = [".jpg", ".jpeg", ".png", ".gif"];
@@ -100,7 +100,7 @@ export default function TicketDetails() {
     const fetchAgents = async () => {
       try {
         const { data } = await axios.get("/api/users");
-        setAgents(data.filter((u) => u.role === "agent"));
+        setAgents(data.filter((u) => u.role != "user"));
       } catch (err) {
         console.error("Failed to load agents:", err);
       }
@@ -413,6 +413,7 @@ export default function TicketDetails() {
                       Save Changes
                     </button>
                   </div>
+
                 </form>
               ) : (
                 <form
@@ -512,7 +513,7 @@ export default function TicketDetails() {
                       onChange={(e) => setAssignedToVal(e.target.value)}
                       className="w-full border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
                     >
-                      <option value="">Unassigned</option>
+                      <option value="Unassined">Unassigned</option>
                       {isAdmin &&
                         agents.map((a) => (
                           <option key={a._id} value={a._id}>
@@ -642,12 +643,17 @@ export default function TicketDetails() {
                     {h.changedBy.name} ({h.changedBy.email})
                   </strong>
                 </p>
-                <p className="text-gray-800">
+               {h.fieldChanged !== 'resolutionNotes' && h.fieldChanged !== 'closureReason' && (<p className="text-gray-800">
                   <strong>{h.fieldChanged}</strong> changed from “
                   <b style={{ textTransform: "capitalize" }}>{h.oldValue}</b>”
                   to “
                   <b style={{ textTransform: "capitalize" }}>{h.newValue?._id ? h.newValue.name : h.newValue}</b>”
-                </p>
+                </p>)}
+
+                {h.fieldChanged !== 'assignedTo' && h.fieldChanged !== 'status' && h.fieldChanged !== 'priority' && (<p className="text-gray-800">
+                  <strong style={{ textTransform: "capitalize" }}>{h.fieldChanged}:</strong> 
+                  <span style={{ textTransform: "capitalize" }}> {h.newValue?._id ? h.newValue.name : h.newValue}</span>
+                </p>)}
               </li>
             ))}
           </ul>

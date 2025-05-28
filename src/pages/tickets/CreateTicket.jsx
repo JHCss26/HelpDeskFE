@@ -10,13 +10,14 @@ const CreateTicket = () => {
   const [form, setForm] = useState({
     title: "",
     description: "",
-   
+    department: "",
     category: "",
     priority: "Medium",
     attachments: [], // now an array
   });
   const [previews, setPreviews] = useState([]); // array of preview URLs
   const [categories, setCategories] = useState([]);
+  const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -24,10 +25,13 @@ const CreateTicket = () => {
   useEffect(() => {
     const loadMeta = async () => {
       try {
-        const [catsRes] = await Promise.all([
+        const [catsRes, deptRes] = await Promise.all([
           axios.get("/api/categories"),
+          axios.get("/api/departments"),
         ]);
         setCategories(catsRes.data);
+        setDepartments(deptRes.data);
+
       } catch (err) {
         console.error(err);
         setError("Failed to load categories or departments.");
@@ -160,6 +164,26 @@ const CreateTicket = () => {
               {categories.map((c) => (
                 <option key={c._id} value={c._id}>
                   {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="department" className="block font-medium mb-1">
+              Department
+            </label>
+            <select
+              id="department"
+              name="department"
+              value={form.department}
+              onChange={handleChange}
+              className="w-full border rounded p-2 focus:outline-none focus:ring"
+            >
+              <option value="">Select Department</option>
+              {departments.map((d) => (
+                <option key={d._id} value={d._id}>
+                  {d.name}
                 </option>
               ))}
             </select>
