@@ -83,6 +83,7 @@ const CreateTicket = () => {
     fd.append("description", form.description);
     fd.append("category", form.category);
     fd.append("priority", form.priority);
+    fd.append("department", form.department); // optional
     form.attachments.forEach((file) => fd.append("attachments", file));
 
     setLoading(true);
