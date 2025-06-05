@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 
 // Priorities for PriorityFilterWithCheckboxes
-const PRIORITIES = ["All", "Low", "Medium", "High", "Urgent"];
+const PRIORITIES = ["All", "Low", "Medium", "High", "Critical"];
 
 export default function PriorityFilterWithCheckboxes({
   priorityFilter,

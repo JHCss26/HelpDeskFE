@@ -9,8 +9,6 @@ import StatusFilterWithCheckboxes from "../../components/StatusFilterWithCheckbo
 import PriorityFilterWithCheckboxes from "../../components/PriorityFilterWithCheckboxes";
 import { saveAs } from "file-saver";
 
-const PRIORITIES = ["Low", "Medium", "High", "Critical"];
-
 export default function TicketBoard() {
   const { user } = useSelector((s) => s.auth);
   const isAgent = user.role === "agent";
