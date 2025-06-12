@@ -57,6 +57,9 @@ export default function StatusFilterWithCheckboxes({ statusFilter, setStatusFilt
   return (
     <div className="relative inline-block" ref={ref}>
       {/* fake “select” button */}
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+      Filter by Status
+    </label>
       <button
         type="button"
         onClick={() => setIsOpen(o => !o)}

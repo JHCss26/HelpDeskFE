@@ -8,6 +8,7 @@ import ExportButton from "../../components/ExportButton";
 import StatusFilterWithCheckboxes from "../../components/StatusFilterWithCheckboxes";
 import PriorityFilterWithCheckboxes from "../../components/PriorityFilterWithCheckboxes";
 import { saveAs } from "file-saver";
+import UserFilterWithCheckboxes from "../../components/UserFilterWithCheckboxes";
 
 export default function TicketBoard() {
   const { user } = useSelector((s) => s.auth);
@@ -18,6 +19,8 @@ export default function TicketBoard() {
   const [agentFilter, setAgentFilter] = useState("all"); // 'all' | 'assigned'
   const [statusFilter, setStatusFilter] = useState(["Open"]); // array of statuses
   const [priorityFilter, setPriorityFilter] = useState([]); // array of priorities
+  const [selectedAgents, setSelectedAgents] = useState([]);
+
   const [loading, setLoading] = useState(false);
 
   // Pagination & Sorting
@@ -41,9 +44,11 @@ export default function TicketBoard() {
       setLoading(true);
       try {
         const params = {};
-        if (statusFilter.length > 0) params.status = statusFilter.join(",");
-        if (priorityFilter.length > 0) params.priority = priorityFilter.join(",");
+       if (statusFilter.length > 0) params.status = statusFilter.join(",");
+      if (priorityFilter.length > 0) params.priority = priorityFilter.join(",");
+      if (selectedAgents.length > 0) params.assignee = selectedAgents.join(",");
 
+        console.log(selectedAgents, params)
         const { data } = await axios.get(endpoint, { params });
         setTickets(data);
         setCurrentPage(1); // reset to first page when data changes
@@ -54,7 +59,7 @@ export default function TicketBoard() {
       }
     };
     fetchTickets();
-  }, [endpoint, statusFilter, priorityFilter]);
+  }, [endpoint, statusFilter, priorityFilter, selectedAgents]);
 
   // Sorting logic
   const changeSort = (key) => {
@@ -85,9 +90,7 @@ export default function TicketBoard() {
       if (sortConfig.key === "createdAt") {
         const aDate = new Date(aKey);
         const bDate = new Date(bKey);
-        return sortConfig.direction === "asc"
-          ? aDate - bDate
-          : bDate - aDate;
+        return sortConfig.direction === "asc" ? aDate - bDate : bDate - aDate;
       }
 
       return 0;
@@ -171,6 +174,10 @@ export default function TicketBoard() {
             priorityFilter={priorityFilter}
             setPriorityFilter={setPriorityFilter}
           />
+          <UserFilterWithCheckboxes
+            userFilter={selectedAgents}
+            setUserFilter={setSelectedAgents}
+          />
           <ExportButton />
           <Link
             to="/tickets/create"
@@ -218,9 +225,7 @@ export default function TicketBoard() {
               <th className="px-4 py-2 text-left">SLA Due</th>
               <th className="px-4 py-2 text-left">SLA Status</th>
               {isAdmin && <th className="px-4 py-2 text-left">Created By</th>}
-              {isAdmin && (
-                <th className="px-4 py-2 text-left">Assigned To</th>
-              )}
+              {isAdmin && <th className="px-4 py-2 text-left">Assigned To</th>}
               <th className="px-4 py-2 text-left">Actions</th>
             </tr>
           </thead>
@@ -253,9 +258,7 @@ export default function TicketBoard() {
                   {new Date(t.createdAt).toLocaleDateString()}
                 </td>
                 <td className="px-4 py-2">
-                  {t.slaDueDate
-                    ? new Date(t.slaDueDate).toLocaleString()
-                    : "—"}
+                  {t.slaDueDate ? new Date(t.slaDueDate).toLocaleString() : "—"}
                 </td>
                 <td className="px-4 py-2">
                   {t.isSlaBreached ? (
@@ -266,12 +269,8 @@ export default function TicketBoard() {
                     <span className="text-green-600">OK</span>
                   )}
                 </td>
-                {isAdmin && (
-                  <td className="px-4 py-2">{t.createdBy?.name}</td>
-                )}
-                {isAdmin && (
-                  <td className="px-4 py-2">{t.assignedTo?.name}</td>
-                )}
+                {isAdmin && <td className="px-4 py-2">{t.createdBy?.name}</td>}
+                {isAdmin && <td className="px-4 py-2">{t.assignedTo?.name}</td>}
                 <td className="px-4 py-2">
                   <button
                     className="text-gray-500 hover:text-gray-700 focus:outline-none cursor-pointer"

@@ -49,6 +49,9 @@ export default function PriorityFilterWithCheckboxes({
 
   return (
     <div className="relative inline-block" ref={ref}>
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+      Filter by Priority
+    </label>
       <button
         type="button"
         onClick={() => setIsOpen((o) => !o)}
