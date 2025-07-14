@@ -17,9 +17,37 @@ export default function TicketBoard() {
 
   const [tickets, setTickets] = useState([]);
   const [agentFilter, setAgentFilter] = useState("all"); // 'all' | 'assigned'
-  const [statusFilter, setStatusFilter] = useState(["Open"]); // array of statuses
-  const [priorityFilter, setPriorityFilter] = useState([]); // array of priorities
-  const [selectedAgents, setSelectedAgents] = useState([]);
+  const [statusFilter, setStatusFilter] = useState(() => {
+    const saved = localStorage.getItem("statusFilter");
+    try {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) return parsed;
+      return ["Open"]; // or default you prefer
+    } catch {
+      return ["Open"];
+    }
+  });
+
+  const [priorityFilter, setPriorityFilter] = useState(() => {
+    const saved = localStorage.getItem("priorityFilter");
+    try {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) return parsed;
+      return [];
+    } catch {
+      return [];
+    }
+  }); // array of priorities
+  const [selectedAgents, setSelectedAgents] = useState(() => {
+    const saved = localStorage.getItem("userFilter");
+    try {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) return parsed;
+      return [];
+    } catch {
+      return [];
+    }
+  });
 
   const [loading, setLoading] = useState(false);
 
@@ -44,11 +72,13 @@ export default function TicketBoard() {
       setLoading(true);
       try {
         const params = {};
-       if (statusFilter.length > 0) params.status = statusFilter.join(",");
-      if (priorityFilter.length > 0) params.priority = priorityFilter.join(",");
-      if (selectedAgents.length > 0) params.assignee = selectedAgents.join(",");
-
-        console.log(selectedAgents, params)
+        if (isAdmin || isAgent) {
+          if (statusFilter.length > 0) params.status = statusFilter.join(",");
+          if (priorityFilter.length > 0)
+            params.priority = priorityFilter.join(",");
+          if (selectedAgents.length > 0)
+            params.assignee = selectedAgents.join(",");
+        }
         const { data } = await axios.get(endpoint, { params });
         setTickets(data);
         setCurrentPage(1); // reset to first page when data changes
@@ -60,6 +90,14 @@ export default function TicketBoard() {
     };
     fetchTickets();
   }, [endpoint, statusFilter, priorityFilter, selectedAgents]);
+
+  useEffect(() => {
+    if (!isAdmin || !isAgent) {
+      localStorage.removeItem("priorityFilter");
+      localStorage.removeItem("statusFilter");
+      localStorage.removeItem("userFilter");
+    }
+  }, [isAgent, isAdmin]);
 
   // Sorting logic
   const changeSort = (key) => {
@@ -165,27 +203,29 @@ export default function TicketBoard() {
         </div>
 
         {/* Filters & Actions */}
-        <div className="flex flex-wrap items-center space-x-2 gap-2">
-          <StatusFilterWithCheckboxes
-            statusFilter={statusFilter}
-            setStatusFilter={setStatusFilter}
-          />
-          <PriorityFilterWithCheckboxes
-            priorityFilter={priorityFilter}
-            setPriorityFilter={setPriorityFilter}
-          />
-          <UserFilterWithCheckboxes
-            userFilter={selectedAgents}
-            setUserFilter={setSelectedAgents}
-          />
-          <ExportButton />
-          <Link
-            to="/tickets/create"
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-          >
-            Create Ticket
-          </Link>
-        </div>
+        {(isAdmin || isAgent) && (
+          <div className="flex flex-wrap items-center space-x-2 gap-2">
+            <StatusFilterWithCheckboxes
+              statusFilter={statusFilter}
+              setStatusFilter={setStatusFilter}
+            />
+            <PriorityFilterWithCheckboxes
+              priorityFilter={priorityFilter}
+              setPriorityFilter={setPriorityFilter}
+            />
+            <UserFilterWithCheckboxes
+              userFilter={selectedAgents}
+              setUserFilter={setSelectedAgents}
+            />
+            <ExportButton />
+            <Link
+              to="/tickets/create"
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded mt-5"
+            >
+              Create Ticket
+            </Link>
+          </div>
+        )}
       </div>
 
       <div className="overflow-x-auto bg-white shadow rounded mt-6">

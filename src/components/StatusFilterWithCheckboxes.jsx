@@ -16,7 +16,12 @@ export default function StatusFilterWithCheckboxes({ statusFilter, setStatusFilt
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef(null);
 
-  // close when clicking outside
+  // ✅ Save to localStorage only when statusFilter changes
+  useEffect(() => {
+    localStorage.setItem('statusFilter', JSON.stringify(statusFilter));
+  }, [statusFilter]);
+
+  // Close dropdown when clicking outside
   useEffect(() => {
     const onClick = e => {
       if (ref.current && !ref.current.contains(e.target)) {
@@ -43,7 +48,7 @@ export default function StatusFilterWithCheckboxes({ statusFilter, setStatusFilt
     }
   };
 
-  // Determine button label with ellipsis if more than 3 selected
+  // Determine button label with ellipsis if more than 2 selected
   let buttonLabel;
   if (allSelected || noneSelected) {
     buttonLabel = 'All Statuses';
@@ -56,14 +61,13 @@ export default function StatusFilterWithCheckboxes({ statusFilter, setStatusFilt
 
   return (
     <div className="relative inline-block" ref={ref}>
-      {/* fake “select” button */}
       <label className="block text-sm font-medium text-gray-700 mb-1">
-      Filter by Status
-    </label>
+        Filter by Status
+      </label>
       <button
         type="button"
         onClick={() => setIsOpen(o => !o)}
-        className="w-auto text-left  border-gray-200 bg-[#fff] border-2 rounded px-2 py-1 flex justify-between items-center"
+        className="w-auto text-left border-gray-200 bg-[#fff] border-2 rounded px-2 py-1 flex justify-between items-center"
       >
         {buttonLabel}
         <svg
@@ -76,7 +80,6 @@ export default function StatusFilterWithCheckboxes({ statusFilter, setStatusFilt
         </svg>
       </button>
 
-      {/* dropdown menu */}
       {isOpen && (
         <div className="absolute mt-0.5 mx-0.5 w-75 bg-[#fff] shadow-lg z-50">
           {STATUSES.map(s => (

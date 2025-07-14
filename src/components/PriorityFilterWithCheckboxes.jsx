@@ -12,6 +12,10 @@ export default function PriorityFilterWithCheckboxes({
   const ref = useRef(null);
 
   useEffect(() => {
+  localStorage.setItem("priorityFilter", JSON.stringify(priorityFilter));
+}, [priorityFilter]);
+
+  useEffect(() => {
     const onClick = (e) => {
       if (ref.current && !ref.current.contains(e.target)) {
         setIsOpen(false);
@@ -50,8 +54,8 @@ export default function PriorityFilterWithCheckboxes({
   return (
     <div className="relative inline-block" ref={ref}>
       <label className="block text-sm font-medium text-gray-700 mb-1">
-      Filter by Priority
-    </label>
+        Filter by Priority
+      </label>
       <button
         type="button"
         onClick={() => setIsOpen((o) => !o)}
@@ -68,7 +72,7 @@ export default function PriorityFilterWithCheckboxes({
         </svg>
       </button>
       {isOpen && (
-        <div className="absolute mt-1 mx-0.5 w-auto bg-white  shadow-lg z-50">
+        <div className="absolute mt-1 mx-0.5 w-auto bg-white shadow-lg z-50">
           {PRIORITIES.map((item) => (
             <label
               key={item}
