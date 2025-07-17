@@ -19,7 +19,7 @@ export default function SLAAlerts({ tickets }) {
             <ul className="mt-1 text-sm text-red-700 list-disc list-inside">
               {breached.map(t => (
                 <li key={t._id}>
-                  <a href={`/tickets/${t._id}`} className="underline hover:text-red-900">
+                  <a href={`app/tickets/${t._id}`} className="underline hover:text-red-900">
                     {t.ticketId}: {t.title}
                   </a>
                 </li>
@@ -38,7 +38,7 @@ export default function SLAAlerts({ tickets }) {
             <ul className="mt-1 text-sm text-yellow-700 list-disc list-inside">
               {upcoming.map(t => (
                 <li key={t._id}>
-                  <a href={`/tickets/${t._id}`} className="underline hover:text-yellow-900">
+                  <a href={`app/tickets/${t._id}`} className="underline hover:text-yellow-900">
                     {t.ticketId}: {t.title}
                   </a>
                 </li>
