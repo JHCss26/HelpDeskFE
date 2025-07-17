@@ -1,9 +1,10 @@
 // src/components/SLAAlerts.jsx
-import { ExclamationTriangleIcon, ClockIcon } from '@heroicons/react/24/solid';
+import { ExclamationTriangleIcon, ClockIcon } from "@heroicons/react/24/solid";
+import { Link } from "react-router-dom";
 
 export default function SLAAlerts({ tickets }) {
-  const upcoming = tickets.filter(t => t.slaReminderSent && !t.isSlaBreached);
-  const breached = tickets.filter(t => t.isSlaBreached);
+  const upcoming = tickets.filter((t) => t.slaReminderSent && !t.isSlaBreached);
+  const breached = tickets.filter((t) => t.isSlaBreached);
 
   if (!upcoming.length && !breached.length) return null;
 
@@ -14,14 +15,18 @@ export default function SLAAlerts({ tickets }) {
           <ExclamationTriangleIcon className="h-6 w-6 text-red-600 mr-3" />
           <div>
             <p className="font-semibold text-red-800">
-              {breached.length} SLA-breached ticket{breached.length>1?'s':''}
+              {breached.length} SLA-breached ticket
+              {breached.length > 1 ? "s" : ""}
             </p>
             <ul className="mt-1 text-sm text-red-700 list-disc list-inside">
-              {breached.map(t => (
+              {breached.map((t) => (
                 <li key={t._id}>
-                  <a href={`app/tickets/${t._id}`} className="underline hover:text-red-900">
+                  <Link
+                    to={`/tickets/${t._id}`}
+                    className="underline hover:text-red-900"
+                  >
                     {t.ticketId}: {t.title}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -33,14 +38,18 @@ export default function SLAAlerts({ tickets }) {
           <ClockIcon className="h-6 w-6 text-yellow-600 mr-3" />
           <div>
             <p className="font-semibold text-yellow-800">
-              {upcoming.length} ticket{upcoming.length>1?'s':''} nearing SLA
+              {upcoming.length} ticket{upcoming.length > 1 ? "s" : ""} nearing
+              SLA
             </p>
             <ul className="mt-1 text-sm text-yellow-700 list-disc list-inside">
-              {upcoming.map(t => (
+              {upcoming.map((t) => (
                 <li key={t._id}>
-                  <a href={`app/tickets/${t._id}`} className="underline hover:text-yellow-900">
+                  <Link
+                    to={`/tickets/${t._id}`}
+                    className="underline hover:text-red-900"
+                  >
                     {t.ticketId}: {t.title}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
