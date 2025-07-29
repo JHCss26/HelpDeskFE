@@ -6,7 +6,7 @@ import NotificationBell from "../components/NotificationBell";
 import { logout } from "../features/auth/authSlice";
 import { navItemsByRole } from "../config/navConfig";
 import Logo from "../assets/logo.png";
-import Logo2 from "../assets/Logo2.png";
+import Logo2 from "../assets/JH-Logo.png";
 import { getInitials } from "../utils/stringHelpers";
 
 export default function MainLayout() {
