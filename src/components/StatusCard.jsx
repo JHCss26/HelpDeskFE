@@ -2,29 +2,27 @@ import React, { useState, useEffect } from "react";
 import axios from "../api/axiosInstance";
 import MetricCard from "./MetricCard";
 
-export default function StatusCards({year, month}) {
+export default function StatusCards({ filterData }) {
   const [metrics, setMetrics] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-     const params = {};
-    if (year) params.year = year;
-    if (month) params.month = month;
-    axios
-      .get("/api/tickets/status/totals", { params })
-      .then((res) => {
-        // expecting total, totalPercentChange, byStatus, statusPercentChange
-        setMetrics({
-          total: res.data.total,
-          open: res.data.byStatus.Open || 0,
-          closed: res.data.byStatus.Closed || 0,
-          inProgress: res.data.byStatus["In Progress"] || 0,
-          onHold: res.data.byStatus["On Hold"] || 0,
-          waitingForCustomer: res.data.byStatus["Waiting for Customer"] || 0,
-        });
-      })
-      .catch((err) => setError(err.response?.data?.error || err.message));
-  }, [setMetrics, year, month]);
+  if (!filterData) return;
+
+  axios
+    .get("/api/tickets/status/totals", { params: filterData })
+    .then((res) => {
+      setMetrics({
+        total: res.data.total,
+        open: res.data.byStatus.Open || 0,
+        closed: res.data.byStatus.Closed || 0,
+        inProgress: res.data.byStatus["In Progress"] || 0,
+        onHold: res.data.byStatus["On Hold"] || 0,
+        waitingForCustomer: res.data.byStatus["Waiting for Customer"] || 0,
+      });
+    })
+    .catch((err) => setError(err.response?.data?.error || err.message));
+}, [filterData]);
 
   if (error) {
     return <div className="text-red-600">Error: {error}</div>;

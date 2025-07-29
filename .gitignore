@@ -32,3 +32,5 @@ dist-ssr
 *.development
 .env
 .env.development
+.env
+.env.development

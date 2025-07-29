@@ -6,6 +6,7 @@ import NotificationBell from "../components/NotificationBell";
 import { logout } from "../features/auth/authSlice";
 import { navItemsByRole } from "../config/navConfig";
 import Logo from "../assets/logo.png";
+import Logo2 from "../assets/Logo2.png";
 import { getInitials } from "../utils/stringHelpers";
 
 export default function MainLayout() {
@@ -49,15 +50,28 @@ export default function MainLayout() {
 
   return (
     <div className="flex-1 flex lg:flex-row md:flex-col sm:flex-col max-sm:flex-col h-screen w-full overflow-auto">
-      <aside className="py-8 z-20 flex-col w-36 shadow-[2px_0_6px_0_hsla(0,0%,76.1%,0.5)] hidden lg:flex xl:flex h-full">
+      <aside className="py-4 z-20 flex-col w-40 shadow-[2px_0_6px_0_hsla(0,0%,76.1%,0.5)] hidden lg:flex xl:flex h-full">
         {/* Header Section */}
-        <div className="text-center flex flex-col items-center justify-center">
+        {/*<div className="text-center flex flex-col items-center justify-center">
           <h3 className="text-3xl font-extrabold text-[#E30613] border-b-2 border-[#] inline-block pb-0.5">
             HDS
           </h3>
           <h6 className="mt-0.5 text-2x1 font-medium text-[#6CBD45] inline-block pb-1 ">
             HelpDesk
           </h6>
+        </div>*/}
+
+        <div className="text-center flex flex-col gap-2 items-center justify-center p-2">
+          <img
+            src={Logo2}
+            alt="HDS Logo"
+            className="w-fit"
+          />
+          <div className="md:border-dotted w-full h-[20ppx] border-black"></div>
+          <div>
+          <span className="font-sans font-bold uppercase font-stretch-50% tracking-wider text-red-500">Help</span>
+          <span className="font-sans font-bold uppercase font-stretch-50% tracking-wider text-green-500">Desk</span>
+          </div>
         </div>
 
         {/* Navigation Section */}
@@ -180,7 +194,10 @@ export default function MainLayout() {
         <img src={Logo} alt="HelpDesk Logo" className="w-[250px] max-sm:w-40" />
         <div className="flex items-center justify-center space-x-4 w-auto">
           <NotificationBell />
-          <div  ref={containerRef} className="flex items-center justify-center w-full">
+          <div
+            ref={containerRef}
+            className="flex items-center justify-center w-full"
+          >
             <button
               onClick={() => setOpen((v) => !v)}
               className="flex items-center justify-center w-15 h-15 rounded-full font-bold text-2x1 bg-gray-100 hover:bg-blue-300 hover:text-[#fff] focus:outline-none"
